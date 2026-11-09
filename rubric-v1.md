@@ -202,10 +202,10 @@ Raters work in a simple spreadsheet or CSV with **one row per query, per rater**
 | `query` | From the SQL | What the searcher typed |
 | `search_visits` | From the SQL | How many visits (sessions) included this query |
 | `tier` | From the SQL | `head`, `torso`, or `tail` |
-| `total_results` | From the SQL or by re-running the query | How many results the search returned in total, not just the 10 rated. If it is under 10, write `N/A` in the grade columns for the positions with no result. If it is 0, every grade is `N/A`; fill in `expected_products`. |
-| `rules_applied` | Data Scientist | How the results were produced, separated by semicolons: for example `lexical`, `vector`, `hybrid (lexical + vector)`, `synonyms`, `brand boost`, `price filter`. Use the same wording every time. **Hide this column from raters** so they can't tell which setup made a result (Section 9). |
 | `goal` | **PM or expert**, before rating. Not the rater. | The searcher goal (Section 4) |
 | `brand_need`, `product_category_need`, `activity_need`, `gender_age_need`, `attribute_need`, `need_note` | **Experts**, before rating. Not the rater. | The information need (Section 5). Each `_need` column holds what the searcher wants for that field, such as `Any` or `Osprey`. |
+| `rules_applied` | Data Scientist | How the results were produced, separated by semicolons: for example `lexical`, `vector`, `hybrid (lexical + vector)`, `synonyms`, `brand boost`, `price filter`. Use the same wording every time. **Hide this column from raters** so they can't tell which setup made a result (Section 9). |
+| `total_results` | From the SQL or by re-running the query | How many results the search returned in total, not just the 10 rated. If it is under 10, write `N/A` in the grade columns for the positions with no result. If it is 0, every grade is `N/A`; fill in `expected_products`. |
 | `rater` | Rater | Their name or ID. |
 | `grade_1`, `product_id_1`, `grade_2`, `product_id_2`, and so on to `grade_10`, `product_id_10` | See the two rows below | Each grade has its product ID in the next column, so every product sits beside its grade. |
 | `grade_1` to `grade_10` | Rater | A 0-3 grade for each of the top 10 results, in the order shown. `grade_1` is the first result. **Never leave a grade empty.** Use `N/A` where the search returned nothing at that position, and `unsure` if you can't grade it (say why in `rater_notes`). (Section 6) |
@@ -223,10 +223,10 @@ A query **passes** only if all three are true:
 2. No result in positions 1-3 is graded 0.
 3. The average of the top three grades (`top3_avg`) is 2 or higher.
 
-Otherwise it **fails**. The rule is the same for every goal. Set it before you look at the results, and don't change it between audits, or the trend becomes meaningless. In a spreadsheet, with `grade_1`, `grade_2` and `grade_3` in columns Q, S and U (each product ID sits in the column to the right of its grade) and `total_results` in column G:
+Otherwise it **fails**. The rule is the same for every goal. Set it before you look at the results, and don't change it between audits, or the trend becomes meaningless. In a spreadsheet, with `grade_1`, `grade_2` and `grade_3` in columns Q, S and U (each product ID sits in the column to the right of its grade) and `total_results` in column O:
 
 - `top3_avg`: `=IFERROR(ROUND(AVERAGE(Q2,S2,U2),2),"N/A")`
-- `eval_result`: `=IF(AND(G2>0,COUNT(Q2,S2,U2)>0,(Q2=0)+(S2=0)+(U2=0)=0,N(AK2)>=2),"pass","fail")` (where `AK2` is the `top3_avg` cell)
+- `eval_result`: `=IF(AND(O2>0,COUNT(Q2,S2,U2)>0,(Q2=0)+(S2=0)+(U2=0)=0,N(AK2)>=2),"pass","fail")` (where `AK2` is the `top3_avg` cell)
 
 ### Golden set file
 
@@ -237,6 +237,7 @@ Once the two experts agree on enough results, save the agreed grades in a separa
 | `golden_date`, `rubric_version` | When the set was built, and the rubric version the experts used |
 | `query`, `search_visits`, `tier` | The query and its traffic, as in the main file |
 | `goal`, `brand_need`, `product_category_need`, `activity_need`, `gender_age_need`, `attribute_need`, `need_note` | The goal and information need the experts used |
+| `rules_applied`, `total_results` | How the results were produced and how many the search returned when the experts graded, as in the main file |
 | `grade_1`, `product_id_1`, `grade_2`, `product_id_2`, and so on to `grade_10`, `product_id_10` | As in the main file, each grade has its product ID in the next column. The two rows below say what each holds. |
 | `grade_1` to `grade_10` | The final grade for each position, which both experts agreed on (after settling any disagreement). `N/A` where the search returned nothing at that position. |
 | `product_id_1` to `product_id_10` | The ID of the product the experts graded at each position. `product_id_1` matches `grade_1`. Leave a cell empty where the search returned nothing at that position. These IDs are fixed along with the grades. |

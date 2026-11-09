@@ -1,8 +1,8 @@
-golden_date,rubric_version,query,search_visits,tier,goal,brand_need,product_category_need,activity_need,gender_age_need,attribute_need,need_note,grade_1,product_id_1,grade_2,product_id_2,grade_3,product_id_3,grade_4,product_id_4,grade_5,product_id_5,grade_6,product_id_6,grade_7,product_id_7,grade_8,product_id_8,grade_9,product_id_9,grade_10,product_id_10
-2026-11-08,v1,keen targhee iii womens,760,torso,Exact match,Keen,Hiking shoes,Hiking,Women,model Targhee III,,3,,3,,2,,2,,2,,1,,1,,N/A,,N/A,,N/A,
-2026-11-08,v1,osprey atmos ag 65,940,torso,Exact match,Osprey,Backpack,Any,Any,model Atmos AG 65,Other Osprey models are substitutes.,3,,3,,2,,2,,2,,1,,1,,1,,1,,0,
-2026-11-08,v1,hydration bladder 2 liter,480,tail,Product search,Any,Hydration reservoir,Any,Any,capacity 2 liters,,3,,3,,3,,2,,2,,1,,1,,1,,0,,N/A,
-2026-11-08,v1,patagonia,8200,head,Product search,Patagonia,Any,Any,Any,Any,A typical Patagonia item is a 3.,3,,3,,3,,3,,3,,3,,2,,2,,2,,1,
-2026-11-08,v1,tent poles for 2 person tent,210,tail,Product search,Any,Tent poles,Camping,Any,fits a 2-person tent,,3,,2,,3,,1,,1,,1,,2,,1,,1,,0,
-2026-11-08,v1,women's trail running shoes,3100,torso,Product search,Any,Running shoes,Trail running,Women,Any,,3,,3,,3,,2,,2,,2,,2,,1,,1,,0,
-2026-11-08,v1,camping gifts for dad,540,torso,Browse,Any,Camping gear,Camping,Adults,Any,Results should differ from each other,3,,3,,3,,3,,2,,2,,1,,1,,0,,0,
+golden_date,rubric_version,query,search_visits,tier,goal,brand_need,product_category_need,activity_need,gender_age_need,attribute_need,need_note,rules_applied,total_results,grade_1,product_id_1,grade_2,product_id_2,grade_3,product_id_3,grade_4,product_id_4,grade_5,product_id_5,grade_6,product_id_6,grade_7,product_id_7,grade_8,product_id_8,grade_9,product_id_9,grade_10,product_id_10
+2026-11-08,v1,keen targhee iii womens,760,torso,Exact match,Keen,Hiking shoes,Hiking,Women,model Targhee III,,,7,3,,3,,2,,2,,2,,1,,1,,N/A,,N/A,,N/A,
+2026-11-08,v1,osprey atmos ag 65,940,torso,Exact match,Osprey,Backpack,Any,Any,model Atmos AG 65,Other Osprey models are substitutes.,,,3,,3,,2,,2,,2,,1,,1,,1,,1,,0,
+2026-11-08,v1,hydration bladder 2 liter,480,tail,Product search,Any,Hydration reservoir,Any,Any,capacity 2 liters,,,9,3,,3,,3,,2,,2,,1,,1,,1,,0,,N/A,
+2026-11-08,v1,patagonia,8200,head,Product search,Patagonia,Any,Any,Any,Any,A typical Patagonia item is a 3.,,,3,,3,,3,,3,,3,,3,,2,,2,,2,,1,
+2026-11-08,v1,tent poles for 2 person tent,210,tail,Product search,Any,Tent poles,Camping,Any,fits a 2-person tent,,,,3,,2,,3,,1,,1,,1,,2,,1,,1,,0,
+2026-11-08,v1,women's trail running shoes,3100,torso,Product search,Any,Running shoes,Trail running,Women,Any,,,,3,,3,,3,,2,,2,,2,,2,,1,,1,,0,
+2026-11-08,v1,camping gifts for dad,540,torso,Browse,Any,Camping gear,Camping,Adults,Any,Results should differ from each other,,,3,,3,,3,,3,,2,,2,,1,,1,,0,,0,
