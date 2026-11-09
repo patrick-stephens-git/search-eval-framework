@@ -13,7 +13,7 @@ Use this guide to find out whether your search has a problem, and to get your te
 | `pm-guide.md` | This guide: the steps, start to finish |
 | `rubric-v1.md` | The rubric raters follow, plus the column guide for the CSV files (Section 11) |
 | `sample-queries-sql.md` | Example SQL for pulling the sample |
-| `sample-eval.csv` | Example grading file: one row per query, one grade column for each of the top 10 results (112 `sample` queries, used in the worked example in `analyzing-results.md`) |
+| `sample-eval.csv` | Example grading file: one row per query, one grade column for each of the top 10 results (180 `sample` queries, used in the worked example in `analyzing-results.md`) |
 | `sample-golden-set.csv` | Example answer key (the golden set) |
 | `analyzing-results.md` | What to do with the grades once you have them |
 
@@ -83,7 +83,7 @@ Use your sample queries to make the examples real.
 - If a query fits two goals, use the one most searchers would mean. Click and purchase data can help you decide.
 - Have a second person tag about 10% of the queries, mixed across goals. If you disagree often, fix the goal list or the questions in the rubric.
 - If you tag with rules or an LLM, an expert checks a sample of the tags first.
-- Mark each query `golden`, `trend`, or `sample` in the `query_set` column.
+- Mark each eval query `trend` or `sample` in the `query_set` column. Golden queries are not eval queries. They go in `sample-golden-set.csv` (Step 6).
 
 **You're done when:** every query has a goal, and the spot-check shows two people agree.
 
@@ -108,11 +108,11 @@ Use `need_note` for anything the five fields miss, such as "results should diffe
 ### Step 6: Build the golden set
 **Do:** Have your 2 experts grade the same small set of queries using the rubric, working separately.
 - About **50 queries, 10 results each** (500 grades per expert). If that is too many, use the top 5 for the golden set only. Pick queries that cover every goal and every rating level, using the goal tags. Don't use trend queries.
-- Each expert fills in their own row for every golden query (`rater` = Expert 1 or Expert 2).
+- Each expert grades every golden query in their own working sheet, using the same columns as the rating file. Do not add these rows to the eval file.
 - **Agreement target:** use **Cohen's kappa**, which corrects for agreement by chance. A starting target is **0.60 or higher**. Below that usually means the rubric is ambiguous. If your tool offers it, use *weighted* kappa, since a 3 vs 2 is a smaller miss than a 3 vs 0. To calculate it, put Expert 1's grades in one column and Expert 2's in another, then use any kappa calculator or spreadsheet template.
 - **Settle every difference.** Where the experts differ, they discuss and agree one grade using the rubric. If they can't agree, the rubric is unclear: fix it (a new version, then redo) or drop that query. Nothing unsettled goes into the golden set.
 
-**You're done when:** the experts meet the agreement target and every grade is settled. Save the settled grades in `sample-golden-set.csv`, one row per golden query. Keep the file clean: each expert's original grades and the explanation of any disagreement stay in their rows of the main file, since they show where the rubric is weak.
+**You're done when:** the experts meet the agreement target and every grade is settled. Save the settled grades in `sample-golden-set.csv`, one row per golden query. Keep the file clean: each expert's original grades and the explanation of any disagreement stay in their own working sheets, since they show where the rubric is weak.
 
 ### Step 7: Select and calibrate raters
 **Select:**
@@ -135,7 +135,7 @@ Use `need_note` for anything the five fields miss, such as "results should diffe
 Set this before grading so nobody is tempted to pick a number that fits the answer they want.
 
 ### Step 9: Grade the sample queries
-**Do:** Calibrated raters grade the top 10 results of every remaining sample query (the sample minus the golden queries) and every trend query.
+**Do:** Calibrated raters grade the top 10 results of every sample query and every trend query.
 
 *How to grade*
 - Enter a 0-3 grade in each `grade_N` column, in the order the results were shown. For any grade below 3, add a reason in `grade_reasons` (as "position: reason"). Add anything else worth noting in `rater_notes`.
@@ -152,8 +152,8 @@ Set this before grading so nobody is tempted to pick a number that fits the answ
 **You're done when:** every result is graded and every dispute is settled. This is your **judgment list**.
 
 ### Step 10: Rank the poor queries
-**Do:** First, check with the Data Scientist that the graded queries represent real searches (a fair mix of common and rare ones). Then calculate two columns, `top3_avg` and `query_result`. A query **passes** only if it returned at least one result, has no 0 in positions 1-3, and its top-3 average is 2 or higher. Otherwise it **fails**. The formulas are in Section 11 of `rubric-v1.md`. Set the rule before you look at the results, and keep it the same between audits.
-- Filter `query_result` to `fail` and sort by `search_visits`, so the failures that hit the most people come first.
+**Do:** First, check with the Data Scientist that the graded queries represent real searches (a fair mix of common and rare ones). Then calculate two columns, `top3_avg` and `eval_result`. A query **passes** only if it returned at least one result, has no 0 in positions 1-3, and its top-3 average is 2 or higher. Otherwise it **fails**. The formulas are in Section 11 of `rubric-v1.md`. Set the rule before you look at the results, and keep it the same between audits.
+- Filter `eval_result` to `fail` and sort by `search_visits`, so the failures that hit the most people come first.
 - Note the reasons and the expected products raters gave.
 
 **You're done when:** you have a ranked list showing which failures hit the most people.
@@ -239,7 +239,7 @@ Use this when you're just starting, want a quick answer, or want to test the ide
 - [ ] Problem threshold set before grading
 - [ ] Sample and trend queries graded; first-batch check-in done
 - [ ] Disputes settled by a gold rater; hidden checks run
-- [ ] `top3_avg` and `query_result` calculated; failing queries ranked by people affected
+- [ ] `top3_avg` and `eval_result` calculated; failing queries ranked by people affected
 - [ ] Finding written with margin of error, breakdowns, and known limits
 - [ ] PM and Data Scientist both recorded Agree
 - [ ] Rubric updated and versioned if anything changed
