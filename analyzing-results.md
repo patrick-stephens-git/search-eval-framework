@@ -2,7 +2,7 @@
 
 Use this after you have graded a sample (Steps 1-9 of `pm-guide.md`). It shows how to go from a spreadsheet of grades to a short list of problems your data science team can act on.
 
-It uses `sample-eval.csv`. The column letters in the formulas match that file's column order, so adjust them if yours differs.
+It uses `sample-eval.csv`, which has 112 `sample` queries of made-up data. The column letters in the formulas match that file's column order, so adjust them if yours differs. The worked example at the end of this guide uses the same file.
 
 **The goal is not a score.** The goal is to answer four questions:
 1. Is there a problem, and how big is it?
@@ -91,6 +91,8 @@ Cut the data a few ways. For each cut, look for a group that is clearly worse th
 | **By search setup** | `rules_applied` | One setup worse than another | Only if you graded more than one setup (for example lexical vs hybrid) |
 | **By need field** | the `_need` columns with `grade_reasons` | Which field is missed most: brand, category, activity, audience, attribute | Which search capability to improve |
 | **By result count** | `total_results` | Low counts with weak grades | Coverage or over-filtering |
+| **By how the query is written** | `query` (read them) | Brand names with no space or punctuation ("northface"), misspellings, model numbers | Brand-name normalization, spelling correction |
+| **Below the top 3** | `grade_reasons` for positions 4-10 | Many 0s and wrong-category results at positions 4-10 on queries that still pass | Noise the pass or fail rule does not show. Report it as its own number. |
 
 Useful spreadsheet formulas (for `sample` rows, rows 2-500):
 
@@ -134,6 +136,13 @@ For each pattern, fill in a row (the numbers below are made up, to show the form
 - **Severity:** nothing shown or a 0 near the top is worse than a weak result low down.
 - **Confidence:** how many queries support it. Few queries means a hypothesis, not a finding.
 
+Check these before you rank:
+- **Patterns overlap.** One query can fit more than one row. A misspelled brand can be a "no results" query and a spelling query. Do not add the shares together.
+- **One query can carry a pattern.** If one head query holds half of a pattern's visits, say so. Check that query on its own.
+- **Do not compare setups across different queries.** If one setup (for example vector) ran only on Browse queries, its fail rate says nothing about the others. Compare setups on the same queries.
+- **Compare a group with its opposite.** "28% of queries with a stated attribute fail" means little until you know the rate for queries without one, and whether the two ranges overlap.
+- **Some patterns will not hold up.** Report them as "looked at, not a priority". It saves the team from checking them again.
+
 Pick the **top two or three**. A short list is more likely to get fixed.
 
 ---
@@ -157,7 +166,7 @@ Keep it to one page:
 
 Bring:
 - the one-page write-up,
-- `sample-eval.csv` with the helper columns,
+- your graded CSV with the helper columns,
 - the list of example queries for each pattern.
 
 Ask them to:
@@ -180,16 +189,65 @@ Around 100 queries gives a rough view, and small groups are leads only. The othe
 
 ## Worked example (made-up demo data)
 
-Using the 8 `sample` queries in `sample-eval.csv` (Rater A). These numbers are from made-up data, so they only show the method.
+Using the 112 `sample` queries in `sample-eval.csv` (Rater A). The numbers are from made-up data, so they only show the method. Real data will be messier.
 
-- **Headline:** 5 of 65 graded results were a 0, which is 7.7%. With 8 queries the margin of error is about ±18 points, so against a 10% threshold the result is **Too close to call**. It needs far more queries.
-- **Queries that fail:** 2 of 8 (25%, margin of error about ±30 points, so this is only a hint). Together they cover 2,210 of the sample's 7,920 visits, about 28%.
-- **Why they fail (`failure_type`):**
-  - "arcteryx beta ar jacket" (Exact match, 410 visits) returns **no results**, and `expected_products` lists the jacket. That points to a coverage or catalog gap.
-  - "kids hiking boots" (Product search, 1,800 visits) is a **ranking** failure. The first good result (a 3) is at position 5, and the top three are sandals, adult boots and rain boots (`top3_avg` 1.33). The right items are being returned but sit too low.
-- **By position:** none of the 21 graded results in positions 1-3 is a 0, and 19 of 21 are a 2 or 3. All five 0s are at positions 4-10.
-- **By reason:** "wrong product category" (13) and "missing key detail" (13) are the most common, then "off-topic" (5). Most weak results are the wrong kind of item or miss a stated attribute such as a price limit or model.
-- **By goal:** Browse has 3 zeros in 20 results, Product search 2 in 37, and Exact match none in 8. These groups are too small to rely on.
-- **Patterns to take forward:** (1) an Exact match query with no results, to check with the catalog team; (2) a ranking problem on a high-traffic query, where good results exist but sit below the top three, to ask the data science team about; (3) wrong-category and attribute misses further down the list, to ask whether the retrieval cutoff or filters let in loosely related items.
+### The headline
 
-With real data you would work from hundreds of queries, so each group would be big enough to read.
+30 of 112 queries fail (27%, margin of error about ±8 points). They cover 18.5% of the sample's visits. 10% of graded results are a 0. Against a 10% threshold on the share of 0s, the result is **Too close to call**.
+
+### Failure types (Section 3)
+
+| Failure type | Queries | Share of visits | Of which fail |
+|---|---|---|---|
+| No results | 11 | 3.3% | 11 |
+| Retrieval (no 3 in the top 10) | 8 | 3.8% | 7 |
+| Ranking (first 3 below position 3) | 10 | 11.3% | 8 |
+
+### The patterns
+
+Only one pattern has more than 15 queries. Treat the rest as leads.
+
+| # | Pattern | Queries | Share of visits | Confidence |
+|---|---|---|---|---|
+| 1 | Brand spelling variants return no results | 8 | 3.1% | Lead with one clear cause |
+| 2 | Typos return nothing or the wrong things | 4 | under 1% | Lead, small |
+| 3 | Right item returned but buried | 10 | 11.3% | Lead. One query is 6.1% of all visits. |
+| 4 | No good result in the top 10 | 8 | 3.8% | Lead. Overlaps with 2 and 7. |
+| 5 | Stated audience or attribute is missed | 39 | 19.8% | Weak. The ranges overlap (see below). |
+| 6 | Browse results lack variety | 16 | 7.5% | Lead |
+| 7 | Exact model missing, substitutes shown | 3 | under 1% | Lead, very small |
+| 8 | Wrong-category noise below the top 3 | 44 | 53.9% | Strongest |
+
+**1. Brand spelling variants.** Nine Exact match queries return 0 results (3.1% of visits). Eight follow one pattern: `arcteryx` (4 queries) against the catalog's "Arc'teryx", `thermarest` and `therm a rest` (2), `northface` (1) and `hydroflask` (1). The ninth, `big agnes copper spur hv ul2`, looks like a different cause. All nine ran on lexical search. Question for the team: do we normalize brand names? Is `big agnes` in the catalog?
+
+**2. Typos.** `rain jaket` and `sleeping bagg` return 0 results. `hikng boots` and `backpak 40l` return results with no 3. All four ran on lexical search.
+
+**3. Right item buried.** Ten queries have their first 3 below position 3, with an average best position of 5.1. Seven of the ten name an audience or attribute (`kids hiking boots`, `mens rain jacket`, `carbon trekking poles`). `down jacket` alone is 6.1% of all visits, so without it the pattern covers about 5% of visits. Check that query on its own.
+
+**4. No good result in the top 10.** Eight queries, 3.8% of visits, all on lexical search. Three use descriptive wording (`winter hiking boots`, `ultralight backpacking tent`, `wide fit hiking boots`). Two are the typos from pattern 2. Three are the exact models from pattern 7. Do not add this to patterns 2 and 7.
+
+**5. Stated audience or attribute.** Among Product search queries, those with a stated audience or attribute fail 11 of 39 (28%, ±14 points). Those without fail 6 of 31 (19%, ±14 points). The ranges overlap, so the data does not yet show a difference. Among failing queries, "missing key detail" is the most common reason in the top 3 (20 times), then "wrong product category" (17). Get a larger sample before you build anything.
+
+**6. Browse variety.** Ten of 16 Browse queries have a near-duplicate noted in `rater_notes`, and only 2 of 16 fail. The results are relevant but repetitive, so the pass or fail rule does not see the problem.
+
+**7. Exact model missing.** `la sportiva bushido ii`, `scarpa zodiac plus gtx` and `kelty tempest 2` return other models. Two fail. `scarpa zodiac plus gtx` passes with a top-3 average of 2.0, because a different model grades 2.
+
+**8. Wrong-category noise.** Forty-four queries (54% of visits) have two or more wrong-category or off-topic results at positions 4 to 10. The share of 0s is 2.0% in positions 1 to 3 and 13.7% in positions 4 to 10. 33 of the 44 still pass. It affects the most visits, but each query is only mildly worse.
+
+### What did not hold up
+
+- **Few results and compatibility queries.** 13 queries return under 10 results (4.9% of visits), but only 2 fail. The top 3 are usually good, so this is not a priority here.
+- **Head vs tail.** Head queries fail 1 of 13. Torso and tail queries fail 29 of 99. But the share of 0s is about the same in every tier (9 to 11%). Tier shows where the failures are, not why. Use it as a cut of patterns 1 to 8.
+- **Lexical vs vector.** Lexical fails 23 of 74, hybrid 7 of 29, and vector 0 of 9. Vector ran only on Browse queries. This compares different kinds of query, so it does not show that vector search is better. A fair test runs the same queries on each setup.
+
+### A gap in the pass or fail rule
+
+Patterns 6, 7 and 8 mostly pass the rule in `rubric-v1.md` Section 11, because it checks only the top 3 and ignores variety. If you rely on the pass rate alone, you under-count these problems. Report the share of 0s at positions 4 to 10 as a second number.
+
+### What to take forward
+
+1. **Brand spelling variants (pattern 1).** One clear cause, a small share of visits, and probably cheap to fix.
+2. **Right item buried (pattern 3).** The biggest reach among the failure types. Confirm `down jacket` separately.
+3. **Noise below the top 3 (pattern 8).** The widest problem. Add a second metric to track it.
+
+With real data you would work from hundreds of queries, so more of these groups would clear the 15-query bar.

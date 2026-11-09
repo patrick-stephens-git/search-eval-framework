@@ -13,7 +13,7 @@ Use this guide to find out whether your search has a problem, and to get your te
 | `pm-guide.md` | This guide: the steps, start to finish |
 | `rubric-v1.md` | The rubric raters follow, plus the column guide for the CSV files (Section 11) |
 | `sample-queries-sql.md` | Example SQL for pulling the sample |
-| `sample-eval.csv` | Example grading file: one row per query, one grade column for each of the top 10 results |
+| `sample-eval.csv` | Example grading file: one row per query, one grade column for each of the top 10 results (112 `sample` queries, used in the worked example in `analyzing-results.md`) |
 | `sample-golden-set.csv` | Example answer key (the golden set) |
 | `analyzing-results.md` | What to do with the grades once you have them |
 
