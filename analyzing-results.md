@@ -34,7 +34,7 @@ Work out these numbers for the `sample` rows:
 | Number | How |
 |---|---|
 | **Share graded Not relevant (0)** | All 0 grades ÷ all graded results (ignore `N/A` and `unsure`) |
-| **Share of queries that fail** | Queries with `query_result` = `fail` ÷ all `sample` queries. `=COUNTIFS(C:C,"sample",AB:AB,"fail")/COUNTIFS(C:C,"sample")`. This is the easiest number to explain to stakeholders. |
+| **Share of queries that fail** | Queries with `query_result` = `fail` ÷ all `sample` queries. `=COUNTIFS(C:C,"sample",AL:AL,"fail")/COUNTIFS(C:C,"sample")`. This is the easiest number to explain to stakeholders. |
 | **Margin of error** | 2 × √(share × (1 − share) ÷ number of queries). Use **queries**, not results. |
 | **Compared with the threshold** | Yes if the whole range is above it. No if it is at or below. Too close to call if the range crosses it. |
 
@@ -58,21 +58,21 @@ This is the most useful step. `query_result` tells you **which** queries fail. T
 | A 3 in the top 3 | OK on the best result | Check the rest for noise | Look at the lower grades |
 | `expected_products` is filled in | **Catalog or index gap** | The item may not exist or be indexed | Catalog and data teams |
 
-Add these helper columns to the end of the sheet (for row 2, copy down). `top3_avg` and `query_result` are already in columns AA and AB:
+Add these helper columns to the end of the sheet (for row 2, copy down). `top3_avg` and `query_result` are already in columns AK and AL:
 
 | Column | Name | Formula |
 |---|---|---|
-| AF | `graded` | `=COUNT(Q2:Z2)` |
-| AG | `zeros` | `=COUNTIF(Q2:Z2,0)` |
-| AH | `best_position` | `=IFERROR(MATCH(3,Q2:Z2,0),"none")` |
-| AI | `failure_type` | `=IF(AF2=0,"no results",IF(AH2="none","retrieval",IF(AH2>3,"ranking","ok")))` |
+| AP | `graded` | `=COUNT(Q2:Z2)` |
+| AQ | `zeros` | `=COUNTIF(Q2:Z2,0)` |
+| AR | `best_position` | `=IFERROR(MATCH(3,Q2:Z2,0),"none")` |
+| AS | `failure_type` | `=IF(AP2=0,"no results",IF(AR2="none","retrieval",IF(AR2>3,"ranking","ok")))` |
 
-Here `Q:Z` are `grade_1` to `grade_10`, and `Q:S` are the first three.
+Here `Q:Z` are `grade_1` to `grade_10`, and `Q:S` are the first three. The `product_id_1` to `product_id_10` columns (`AA:AJ`) sit between the grades and `top3_avg`. The formulas do not use them.
 
 Then count and weight them (for `sample` rows):
 
-- Queries per failure type: `=COUNTIFS(C:C,"sample",AI:AI,"retrieval")`
-- **Searcher visits per failure type**: `=SUMIFS(E:E,C:C,"sample",AI:AI,"retrieval")`
+- Queries per failure type: `=COUNTIFS(C:C,"sample",AS:AS,"retrieval")`
+- **Searcher visits per failure type**: `=SUMIFS(E:E,C:C,"sample",AS:AS,"retrieval")`
 
 The second number matters more. A pattern on 5 queries that covers 20% of visits beats one on 15 rare queries.
 
@@ -96,11 +96,11 @@ Cut the data a few ways. For each cut, look for a group that is clearly worse th
 
 Useful spreadsheet formulas (for `sample` rows, rows 2-500):
 
-- **Share of 0s overall:** `=SUMIFS(AG:AG,C:C,"sample")/SUMIFS(AF:AF,C:C,"sample")`
+- **Share of 0s overall:** `=SUMIFS(AQ:AQ,C:C,"sample")/SUMIFS(AP:AP,C:C,"sample")`
 - **Share of 0s for one goal:** add `,I:I,"Exact match"` to both parts
 - **0s in positions 1-3:** `=SUMPRODUCT((C2:C500="sample")*(Q2:S500=0))`
 - **Graded results in positions 1-3:** `=SUMPRODUCT((C2:C500="sample")*ISNUMBER(Q2:S500))`
-- **Queries with a given reason:** `=SUMPRODUCT((C2:C500="sample")*ISNUMBER(SEARCH("wrong brand",AC2:AC500)))`
+- **Queries with a given reason:** `=SUMPRODUCT((C2:C500="sample")*ISNUMBER(SEARCH("wrong brand",AM2:AM500)))`
 
 **Be careful with small groups.** Treat a group of under about 15 queries as a lead to confirm with a larger sample, not a result.
 
@@ -205,7 +205,7 @@ Using the 112 `sample` queries in `sample-eval.csv` (Rater A). The numbers are f
 
 ### The patterns
 
-Only one pattern has more than 15 queries. Treat the rest as leads.
+Most patterns have fewer than 15 queries (only problems 5, 6 and 8 have more). Treat those as leads.
 
 | # | Pattern | Queries | Share of visits | Confidence |
 |---|---|---|---|---|
@@ -218,36 +218,63 @@ Only one pattern has more than 15 queries. Treat the rest as leads.
 | 7 | Exact model missing, substitutes shown | 3 | under 1% | Lead, very small |
 | 8 | Wrong-category noise below the top 3 | 44 | 53.9% | Strongest |
 
-**1. Brand spelling variants.** Nine Exact match queries return 0 results (3.1% of visits). Eight follow one pattern: `arcteryx` (4 queries) against the catalog's "Arc'teryx", `thermarest` and `therm a rest` (2), `northface` (1) and `hydroflask` (1). The ninth, `big agnes copper spur hv ul2`, looks like a different cause. All nine ran on lexical search. Question for the team: do we normalize brand names? Is `big agnes` in the catalog?
+### Problems found
 
-**2. Typos.** `rain jaket` and `sleeping bagg` return 0 results. `hikng boots` and `backpak 40l` return results with no 3. All four ran on lexical search.
+Each problem has the same parts: what the PM brings, the evidence in the eval, the problem statement, and the likely direction. The problem statement follows this pattern: {target user} {cannot do something} {when}, {so a business outcome suffers}, {because of the suspected cause}. The cause is a guess for the data science team to confirm.
 
-**3. Right item buried.** Ten queries have their first 3 below position 3, with an average best position of 5.1. Seven of the ten name an audience or attribute (`kids hiking boots`, `mens rain jacket`, `carbon trekking poles`). `down jacket` alone is 6.1% of all visits, so without it the pattern covers about 5% of visits. Check that query on its own.
+#### 1. Brand spelling variants return nothing
 
-**4. No good result in the top 10.** Eight queries, 3.8% of visits, all on lexical search. Three use descriptive wording (`winter hiking boots`, `ultralight backpacking tent`, `wide fit hiking boots`). Two are the typos from pattern 2. Three are the exact models from pattern 7. Do not add this to patterns 2 and 7.
+**PM brings:** "Searches for products we sell show no results."  
+**Evidence in the eval:** 9 Exact match queries return 0 results (3.1% of visits), and all 9 fail. 8 follow one pattern: `arcteryx` (4 queries) against the catalog's "Arc'teryx", `thermarest` and `therm a rest` (2), `northface` (1) and `hydroflask` (1). The 9th, `big agnes copper spur hv ul2`, looks like a different cause. All 9 ran on lexical search, and `expected_products` is filled in for each.  
+**Problem statement:** Shoppers cannot find a specific product when they type the brand name without its punctuation or spacing, so these searches end with no click or purchase, because of a brand-name match that fails when the spelling differs from the catalog.  
+**Likely direction:** Normalize brand names and add brand synonyms. Check the catalog for `big agnes` separately. Not a vector problem.
 
-**5. Stated audience or attribute.** Among Product search queries, those with a stated audience or attribute fail 11 of 39 (28%, ±14 points). Those without fail 6 of 31 (19%, ±14 points). The ranges overlap, so the data does not yet show a difference. Among failing queries, "missing key detail" is the most common reason in the top 3 (20 times), then "wrong product category" (17). Get a larger sample before you build anything.
+#### 2. Typos return nothing or the wrong things
 
-**6. Browse variety.** Ten of 16 Browse queries have a near-duplicate noted in `rater_notes`, and only 2 of 16 fail. The results are relevant but repetitive, so the pass or fail rule does not see the problem.
+**PM brings:** "A small typo breaks the whole search."  
+**Evidence in the eval:** 4 queries, under 1% of visits. `rain jaket` and `sleeping bagg` return 0 results. `hikng boots` and `backpak 40l` return results with no 3 in the top 10. All 4 fail and all ran on lexical search.  
+**Problem statement:** Shoppers cannot find the right product when their query has a spelling error, so these searches end with no click, because of a search that requires exact word matches.  
+**Likely direction:** Spelling correction, fuzzy matching, or a vector fallback.
 
-**7. Exact model missing.** `la sportiva bushido ii`, `scarpa zodiac plus gtx` and `kelty tempest 2` return other models. Two fail. `scarpa zodiac plus gtx` passes with a top-3 average of 2.0, because a different model grades 2.
+#### 3. Right item returned but buried
 
-**8. Wrong-category noise.** Forty-four queries (54% of visits) have two or more wrong-category or off-topic results at positions 4 to 10. The share of 0s is 2.0% in positions 1 to 3 and 13.7% in positions 4 to 10. 33 of the 44 still pass. It affects the most visits, but each query is only mildly worse.
+**PM brings:** "The good result is there. It is just not near the top."  
+**Evidence in the eval:** 10 queries have their first 3 below position 3, with an average best position of 5.1. 8 of the 10 fail. They cover 11.3% of visits. `down jacket` alone is 6.1% of all visits, so without it the pattern covers about 5%. 7 of the 10 name an audience or attribute, such as `kids hiking boots`, `mens rain jacket` and `carbon trekking poles`. Setups are mixed: 6 lexical, 4 hybrid.  
+**Problem statement:** Shoppers cannot find the right item near the top of the page when it is returned below position 3, so fewer of these searches end in a click, because of a ranker that does not weigh audience and attribute match.  
+**Likely direction:** Add audience and attribute features, retune boosts, or add a reranker. Check `down jacket` on its own, because it carries much of the number.
 
-### What did not hold up
+#### 4. No good result anywhere in the top 10
 
-- **Few results and compatibility queries.** 13 queries return under 10 results (4.9% of visits), but only 2 fail. The top 3 are usually good, so this is not a priority here.
-- **Head vs tail.** Head queries fail 1 of 13. Torso and tail queries fail 29 of 99. But the share of 0s is about the same in every tier (9 to 11%). Tier shows where the failures are, not why. Use it as a cut of patterns 1 to 8.
-- **Lexical vs vector.** Lexical fails 23 of 74, hybrid 7 of 29, and vector 0 of 9. Vector ran only on Browse queries. This compares different kinds of query, so it does not show that vector search is better. A fair test runs the same queries on each setup.
+**PM brings:** "Nothing on the page is what I wanted."  
+**Evidence in the eval:** 8 queries have no 3 in the top 10, covering 3.8% of visits. 7 fail. All 8 ran on lexical search. 3 use descriptive wording (`winter hiking boots`, `ultralight backpacking tent`, `wide fit hiking boots`). 2 are the typos from problem 2. 3 are the exact models from problem 7. Do not add this count to problems 2 and 7.  
+**Problem statement:** Shoppers cannot find a correct item when they describe it with words that differ from the catalog, so more of these searches end with no click, because of lexical retrieval that does not link the query words to the right products.  
+**Likely direction:** Hybrid or vector retrieval, query expansion, or synonyms.
 
-### A gap in the pass or fail rule
+#### 5. Stated audience or attribute is missed
 
-Patterns 6, 7 and 8 mostly pass the rule in `rubric-v1.md` Section 11, because it checks only the top 3 and ignores variety. If you rely on the pass rate alone, you under-count these problems. Report the share of 0s at positions 4 to 10 as a second number.
+**PM brings:** "I asked for kids' or waterproof or under $100. It showed me none of that."  
+**Evidence in the eval:** Among Product search queries, those with a stated audience or attribute fail 11 of 39 (28%, ±14 points). Those without fail 6 of 31 (19%, ±14 points). The ranges overlap, so the data does not yet show a difference. In the top 3 of failing queries, "missing key detail" is the most common reason (20 times), then "wrong product category" (17). The average top-3 grade is 2.26 with a stated need and 2.62 without.  
+**Problem statement:** Shoppers cannot find items that meet a stated audience, attribute, or price limit, so they click or buy less, because of a search that treats the whole query as text and does not read the attributes.  
+**Likely direction:** Extract audience, price, and attributes into filters or facets. A small LLM or NER parser is common. Get a larger sample before you build anything.
 
-### What to take forward
+#### 6. Browse results lack variety
 
-1. **Brand spelling variants (pattern 1).** One clear cause, a small share of visits, and probably cheap to fix.
-2. **Right item buried (pattern 3).** The biggest reach among the failure types. Confirm `down jacket` separately.
-3. **Noise below the top 3 (pattern 8).** The widest problem. Add a second metric to track it.
+**PM brings:** "Gift and idea searches show the same item over and over."  
+**Evidence in the eval:** 10 of 16 Browse queries (63%, 5.6% of visits) have a near-duplicate noted in `rater_notes`. Only 2 of 16 fail. The results are relevant but repetitive. The 10 ran on vector or hybrid.  
+**Problem statement:** Shoppers cannot see a range of options when they search for ideas or gifts, so they browse less and click fewer results, because of a ranking that orders by closeness to the query and does not vary the results.  
+**Likely direction:** Result diversification, such as MMR or grouping.
+#### 7. Exact model missing, substitutes shown
+
+**PM brings:** "I searched for a specific model and it showed me other ones without saying so."  
+**Evidence in the eval:** 3 Exact match queries return results but not the exact model: `la sportiva bushido ii`, `scarpa zodiac plus gtx` and `kelty tempest 2`. 2 fail. `scarpa zodiac plus gtx` passes with a top-3 average of 2.0, because a different model grades 2. Under 1% of visits.  
+**Problem statement:** Shoppers cannot tell whether a specific model is available when the search shows other models instead, so they leave or click the wrong item, because of a ranking that returns close substitutes and does not signal that the model is missing.  
+**Likely direction:** Check the catalog. Add a "not available" message or flag the substitutes.
+
+#### 8. Wrong-category noise below the top 3
+
+**PM brings:** "The first results are fine, but the page fills up with unrelated items."  
+**Evidence in the eval:** 44 of 112 queries (54% of visits) have two or more wrong-category or off-topic results at positions 4 to 10. The share of 0s is 2.0% in positions 1 to 3 and 13.7% in positions 4 to 10. 33 of the 44 still pass. Examples are `tent`, `camp stove` and `salomon`.  
+**Problem statement:** Shoppers who search for a product type see items of other types below the first results, so they trust the result list less and click fewer results, because of retrieval that lets loosely related items in and has no category filter.  
+**Likely direction:** Category filters or boosts, or a tighter retrieval cutoff. This problem touches the most visits, but each query is only mildly worse.
 
 With real data you would work from hundreds of queries, so more of these groups would clear the 15-query bar.

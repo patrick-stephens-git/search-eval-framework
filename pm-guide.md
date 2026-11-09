@@ -48,7 +48,7 @@ Have these ready:
 - **Label each query head, torso, or tail** by how often it's searched (`tier`), so you can report the groups separately later.
 - **Record how each query was run:** the total number of results returned (`total_results`) and the method used (`rules_applied`, such as lexical, vector, hybrid, or a boost). Hide `rules_applied` from raters.
 - **Set aside a trend set:** 10-20% of the sample size (at least 50 queries). Keep it the same every audit so you can see change over time.
-- Paste the query, `search_visits`, and `tier` into `sample-eval.csv`. Keep each query's top 10 results in a separate list for raters to look at, since the CSV holds grades only.
+- Paste the query, `search_visits`, and `tier` into `sample-eval.csv`. Keep each query's top 10 results in a separate list for raters to look at. The CSV holds grades and product IDs, not titles or images.
 
 **You're done when:** you have the sample queries, the trend set, and the sample date saved.
 
@@ -121,7 +121,7 @@ Use `need_note` for anything the five fields miss, such as "results should diffe
 - **Keep them blind.** Raters should not know which version of search produced a result.
 - **Plan for three raters per result** when you can, with at least one stronger "gold" rater, usually an expert, who settles disagreements (Step 9).
 
-**Calibrate:** Have each rater grade the golden set, then compare their `grade_N` values with `sample-golden-set.csv`, position by position (skip `N/A`).
+**Calibrate:** Have each rater grade the golden set, then compare their `grade_N` values with `sample-golden-set.csv`, product by product using the `product_id_N` columns (skip `N/A`). Matching by product ID keeps the comparison valid if the results move.
 - Show raters where they differed so they learn the rubric.
 - Only raters who hit the agreement target (kappa of 0.60 or higher, same as Step 6) move on.
 
@@ -207,7 +207,7 @@ Say these out loud in every finding, so nobody reads more into it than it can sh
 
 - **Main sample:** draw a new one every audit. Query mix shifts with seasons, launches, and growth. Re-audit at least every quarter, and after big changes to search or the catalog.
 - **Trend set:** keep it the same. Replace a query only when searchers stop using it, and keep a record of replacements.
-- **Golden set:** keep it fixed until the rubric changes version.
+- **Golden set:** keep it fixed until the rubric changes version. Each audit, check that the golden products (`product_id_N`) are still returned for their queries.
 - **Raters:** recalibrate when the rubric changes, and when someone has been away for a while.
 
 ## Lite path: a fast first check

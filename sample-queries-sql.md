@@ -4,7 +4,7 @@ Companion to **Step 1** of `pm-guide.md`. These are example queries for each sam
 
 **Is this generalizable?** The pattern is: *clean and count each unique query → add a weight or a tier → draw the sample → attach the results searchers saw.* That works for any product with search logs. The table names, column names, SQL dialect, and what your logs record will differ. See [What to change for your setup](#what-to-change-for-your-setup).
 
-**Next:** paste the output into `sample-eval.csv` (query, search_visits, and tier go in the columns of the same names), then add the rest of the columns there. The CSV holds grades only. Part 6 gives you the list of results for raters to look at.
+**Next:** paste the output into `sample-eval.csv` (query, search_visits, and tier go in the columns of the same names), then add the rest of the columns there. The CSV holds grades and product IDs, not titles. Part 6 gives you the list of results for raters to look at, and the product IDs for the `product_id_1` to `product_id_10` columns.
 
 ## Assumed tables
 
@@ -212,7 +212,7 @@ LEFT JOIN search_results r  ON r.search_id = l.search_id AND r.position <= 10
 ORDER BY s.query, r.position;
 ```
 
-`total_results` and `rules_applied` go into the CSV columns of the same names. The `LEFT JOIN` keeps queries that returned nothing (they come back with empty result columns). If your logs don't record how results were produced, fill `rules_applied` from your search configuration for that date, or leave it blank.
+`total_results` and `rules_applied` go into the CSV columns of the same names. `item_id` at `position` 1 to 10 goes into `product_id_1` to `product_id_10`. The `LEFT JOIN` keeps queries that returned nothing (they come back with empty result columns). If your logs don't record how results were produced, fill `rules_applied` from your search configuration for that date, or leave it blank.
 
 **If your logs don't record the results shown:** save only the queries, then run each one through your search system on a set date and record the top 10. Write that date down as the sample date. Results can differ by user (personalization, tests), so note which setup you used.
 

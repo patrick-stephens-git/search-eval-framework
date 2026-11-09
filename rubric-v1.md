@@ -190,9 +190,9 @@ These use the outdoor gear store. Replace them with real examples from your own 
 
 ## 11. Rating file format
 
-Raters work in a simple spreadsheet or CSV with **one row per query, per rater**. A worked example is `sample-eval.csv`. Add a row for each rater, and a new set of rows for each audit date. The file holds grades only, not result names. Raters look at the results themselves, in the search tool or in the results list from `sample-queries-sql.md` (Part 6), in the order searchers saw them.
+Raters work in a simple spreadsheet or CSV with **one row per query, per rater**. A worked example is `sample-eval.csv`. Add a row for each rater, and a new set of rows for each audit date. The file holds grades and product IDs, not result names. Raters look at the results themselves, in the search tool or in the results list from `sample-queries-sql.md` (Part 6), in the order searchers saw them.
 
-**Who fills in what:** the PM, the Data Scientist and the experts fill in every column up to `rater`, including `goal` and the `_need` columns, before rating starts. Raters fill in only the columns from `rater` onward: their name, the grades, `grade_reasons`, `expected_products` and `rater_notes`. The PM or analyst calculates `top3_avg` and `query_result` after grading. Raters never fill them in. If a rater thinks a `goal` or `_need` value is wrong, they flag it in `rater_notes`. They don't change it.
+**Who fills in what:** the PM, the Data Scientist and the experts fill in every column up to `rater`, including `goal` and the `_need` columns, before rating starts. Raters fill in only the columns from `rater` onward: their name, the grades, `grade_reasons`, `expected_products` and `rater_notes`. The PM or analyst calculates `top3_avg` and `query_result` after grading. Raters never fill them in. The Data Scientist fills in `product_id_1` to `product_id_10` from the results list before rating starts. Raters do not change them. If a rater thinks a `goal` or `_need` value is wrong, they flag it in `rater_notes`. They don't change it.
 
 | Column | Filled in by | What it holds |
 |---|---|---|
@@ -208,6 +208,7 @@ Raters work in a simple spreadsheet or CSV with **one row per query, per rater**
 | `brand_need`, `product_category_need`, `activity_need`, `gender_age_need`, `attribute_need`, `need_note` | **Experts**, before rating. Not the rater. | The information need (Section 5). Each `_need` column holds what the searcher wants for that field, such as `Any` or `Osprey`. |
 | `rater` | Rater | Their name or ID. Experts use `Expert 1`, `Expert 2`. |
 | `grade_1` to `grade_10` | Rater | A 0-3 grade for each of the top 10 results, in the order shown. `grade_1` is the first result. **Never leave a grade empty.** Use `N/A` where the search returned nothing at that position, and `unsure` if you can't grade it (say why in `rater_notes`). (Section 6) |
+| `product_id_1` to `product_id_10` | Data Scientist, before rating starts | The ID of the product shown at each position, in the same order as the grades. `product_id_1` matches `grade_1`. Leave a cell empty where the search returned nothing at that position. These columns tie each grade to a product, so you can see which products draw bad grades. |
 | `top3_avg` | PM or analyst (calculated) | The average of `grade_1` to `grade_3`, ignoring `N/A` and `unsure`. `N/A` if none of the top 3 has a grade. |
 | `query_result` | PM or analyst (calculated) | `pass` or `fail`, using the rule below |
 | `grade_reasons` | Rater | Why a grade is below 3, as `position: reason` using Section 7, such as `4: wrong brand; 7: off-topic` |
@@ -224,7 +225,7 @@ A query **passes** only if all three are true:
 Otherwise it **fails**. The rule is the same for every goal. Set it before you look at the results, and don't change it between audits, or the trend becomes meaningless. In a spreadsheet, with `grade_1` to `grade_3` in columns Q to S and `total_results` in column G:
 
 - `top3_avg`: `=IFERROR(ROUND(AVERAGE(Q2:S2),2),"N/A")`
-- `query_result`: `=IF(AND(G2>0,COUNT(Q2:S2)>0,COUNTIF(Q2:S2,0)=0,N(AA2)>=2),"pass","fail")` (where `AA2` is the `top3_avg` cell)
+- `query_result`: `=IF(AND(G2>0,COUNT(Q2:S2)>0,COUNTIF(Q2:S2,0)=0,N(AA2)>=2),"pass","fail")` (where `AK2` is the `top3_avg` cell)
 
 ### Golden set file
 
@@ -236,8 +237,9 @@ Once the two experts agree on enough results, save the agreed grades in a separa
 | `query`, `search_visits`, `tier` | The query and its traffic, as in the main file |
 | `goal`, `brand_need`, `product_category_need`, `activity_need`, `gender_age_need`, `attribute_need`, `need_note` | The goal and information need the experts used |
 | `grade_1` to `grade_10` | The final grade for each position, which both experts agreed on (after settling any disagreement). `N/A` where the search returned nothing at that position. |
+| `product_id_1` to `product_id_10` | The ID of the product the experts graded at each position. `product_id_1` matches `grade_1`. Leave a cell empty where the search returned nothing at that position. These IDs are fixed along with the grades. |
 
-Raters are compared with this file position by position, skipping `N/A`. Every graded position is settled. If the experts can't agree on a grade, don't put it in the file: fix the rubric (a new version) or drop that query first.
+Raters are compared with this file by product ID, skipping `N/A`. If a golden product is no longer returned, or has moved to a different position, compare the grade for that product and ignore the position. A product that has gone from the results gets no comparison. Re-check the golden products each audit. If many have gone, the results have changed enough to rebuild the set. Every graded product is settled. If the experts can't agree on a grade, don't put it in the file: fix the rubric (a new version) or drop that query first.
 
 The file is only the answer key. Each expert's own grades and their explanation of any disagreement stay in their rows of the main rating file (`rater_notes`). Use those to fix the rubric, and record the fix in the change log (Section 12).
 
