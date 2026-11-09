@@ -109,6 +109,20 @@ Pick the **one** level that fits best. Read from the top and stop at the first l
 
 **Tie-breaker:** if you are torn between two levels, choose the **lower** one.
 
+**Category comes first.** A result that matches the attribute (soft, cozy, compact, waterproof) but is the wrong product category is a **1**, however well the attribute fits. The attribute only counts once the category is right. Reason: **Wrong product category**.
+
+| Query | Result | Rating | Why |
+|---|---|---|---|
+| "cozy sweaters" | Cozy sweater | 3 | Right category, attribute met |
+| "cozy sweaters" | Sweater that isn't cozy (thin, stiff, technical) | 2 | Right category, misses the attribute (**Missing key detail**) |
+| "cozy sweaters" | Soft socks | 1 | Attribute matches, wrong category |
+| "cozy sweaters" | Cozy shoes | 1 | Attribute matches, wrong category |
+| "compact dumbbells" | Compact dumbbell (e.g. small adjustable set) | 3 | Right category, attribute met |
+| "compact dumbbells" | Full-size dumbbell | 2 | Right category, misses the attribute (**Missing key detail**) |
+| "compact dumbbells" | Compact exercise equipment that isn't a weight (e.g. folding bench, resistance bands) | 1 | Attribute matches, wrong category |
+
+In short: right category and wrong attribute is a 2. Right attribute and wrong category is a 1. Apply the 1 even when the wrong category is a close neighbour (cozy shoes, compact exercise equipment). If the category is only loosely defined in the information need, follow the `product_category_need` notes on what does and does not count.
+
 ### Decision tree for rating
 
 Go down the list. Stop at the first "yes."
@@ -181,6 +195,8 @@ These use the outdoor gear store. Replace them with real examples from your own 
 | Product search | "women's trail running shoes" | Men's trail running shoes | 2 | Wrong audience | One miss: audience |
 | Product search | "women's trail running shoes" | Women's road running shoes | 2 | Wrong activity | One miss: activity |
 | Product search | "kids hiking boots" | Kids' sandals | 1 | Wrong product category | Not boots |
+| Product search | "lightweight tent" | Lightweight camp stove | 1 | Wrong product category | Attribute matches, but it is not a tent |
+| Product search | "lightweight tent" | Heavy family tent | 2 | Missing key detail | Right category, misses the attribute |
 | Browse | "gifts for hikers" | Insulated water bottle | 3 | – | Clear fit for the occasion |
 | Browse | "gifts for hikers" | Gift card | 1 | Too general | Fits any occasion, nothing specific to hikers |
 | Browse | "waterproofing for tents" | Tent seam sealer | 3 | – | Solves the problem |
