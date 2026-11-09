@@ -71,11 +71,11 @@ Every query also has an **information need**: a short description of what this s
 
 | Field | What it says | Values |
 |---|---|---|
-| **Brand** | Whether the searcher wants any brand or a specific one | Any · Specific: [brand(s)] |
+| **Brand** | Whether the searcher wants any brand or a specific one | Any · [brand(s)] |
 | **Product category** | What kind of product they are looking for | [category], with notes on what does *not* count |
-| **Activity** | Whether the product must fit a specific activity | Any · Specific: [activity, e.g. hiking, camping, trail running] |
+| **Activity** | Whether the product must fit a specific activity | Any · [activity, e.g. hiking, camping, trail running] |
 | **Gender / age** | Who the product is for | Any · Adults · Kids · Men · Women |
-| **Attribute** | A specific property the result must have: size, colour, price limit, material, capacity, model, compatibility | Any · Specific: [attribute(s), e.g. waterproof; price $150 or less; model Moab 3] |
+| **Attribute** | A specific property the result must have: size, colour, price limit, material, capacity, model, compatibility | Any · [attribute(s), e.g. waterproof; price $150 or less; model Moab 3] |
 
 Add one short free-text line (`need_note`) for anything the five fields don't capture, such as "results should differ from each other" or what does not count.
 
@@ -83,13 +83,13 @@ Add one short free-text line (`need_note`) for anything the five fields don't ca
 
 | Query | Goal | Brand | Product category | Activity | Gender / age | Attribute | Note |
 |---|---|---|---|---|---|---|---|
-| "osprey atmos ag 65" | Exact match | Specific: Osprey | Backpack | Any | Any | Specific: model Atmos AG 65 | Other Osprey models are substitutes. |
+| "osprey atmos ag 65" | Exact match | Osprey | Backpack | Any | Any | model Atmos AG 65 | Other Osprey models are substitutes. |
 | "rain jacket" | Product search | Any | Rain jacket (waterproof shell) | Any | Any | Any | Not a poncho, fleece, or insulated jacket |
-| "women's trail running shoes" | Product search | Any | Running shoes | Specific: trail running | Women | Any | |
-| "kids hiking boots" | Product search | Any | Hiking boots | Specific: hiking | Kids | Any | |
-| "waterproof coat under $150" | Product search | Any | Rain jacket | Any | Any | Specific: waterproof; price $150 or less | |
-| "gifts for hikers" | Browse | Any | Any hiking gear | Specific: hiking | Any | Specific: small to mid-priced | Results should differ from each other |
-| "tent poles for 2 person tent" | Product search | Any | Tent poles | Camping | Any | Specific: fits a 2-person tent | |
+| "women's trail running shoes" | Product search | Any | Running shoes | trail running | Women | Any | |
+| "kids hiking boots" | Product search | Any | Hiking boots | hiking | Kids | Any | |
+| "waterproof coat under $150" | Product search | Any | Rain jacket | Any | Any | waterproof; price $150 or less | |
+| "gifts for hikers" | Browse | Any | Any hiking gear | hiking | Any | small to mid-priced | Results should differ from each other |
+| "tent poles for 2 person tent" | Product search | Any | Tent poles | Camping | Any | fits a 2-person tent | |
 | "jacket" | Product search | Any | Jacket | Any | Any | Any | Very broad. Rate typical, popular jackets as 3. |
 
 **"Any" means any.** If a field says Any, a result is not wrong for having a particular brand, activity, audience, or attribute.
@@ -205,7 +205,7 @@ Raters work in a simple spreadsheet or CSV with **one row per query, per rater**
 | `total_results` | From the SQL or by re-running the query | How many results the search returned in total, not just the 10 rated. If it is under 10, write `N/A` in the grade columns for the positions with no result. If it is 0, every grade is `N/A`; fill in `expected_products`. |
 | `rules_applied` | Data Scientist | How the results were produced, separated by semicolons: for example `lexical`, `vector`, `hybrid (lexical + vector)`, `synonyms`, `brand boost`, `price filter`. Use the same wording every time. **Hide this column from raters** so they can't tell which setup made a result (Section 9). |
 | `goal` | **PM or expert**, before rating. Not the rater. | The searcher goal (Section 4) |
-| `brand_need`, `product_category_need`, `activity_need`, `gender_age_need`, `attribute_need`, `need_note` | **Experts**, before rating. Not the rater. | The information need (Section 5). Each `_need` column holds what the searcher wants for that field, such as `Any` or `Specific: Osprey`. |
+| `brand_need`, `product_category_need`, `activity_need`, `gender_age_need`, `attribute_need`, `need_note` | **Experts**, before rating. Not the rater. | The information need (Section 5). Each `_need` column holds what the searcher wants for that field, such as `Any` or `Osprey`. |
 | `rater` | Rater | Their name or ID. Experts use `Expert 1`, `Expert 2`. |
 | `grade_1` to `grade_10` | Rater | A 0-3 grade for each of the top 10 results, in the order shown. `grade_1` is the first result. **Never leave a grade empty.** Use `N/A` where the search returned nothing at that position, and `unsure` if you can't grade it (say why in `rater_notes`). (Section 6) |
 | `top3_avg` | PM or analyst (calculated) | The average of `grade_1` to `grade_3`, ignoring `N/A` and `unsure`. `N/A` if none of the top 3 has a grade. |
