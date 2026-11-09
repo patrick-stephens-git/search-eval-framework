@@ -117,11 +117,16 @@ Pick the **one** level that fits best. Read from the top and stop at the first l
 | "cozy sweaters" | Sweater that isn't cozy (thin, stiff, technical) | 2 | Right category, misses the attribute (**Missing key detail**) |
 | "cozy sweaters" | Soft socks | 1 | Attribute matches, wrong category |
 | "cozy sweaters" | Cozy shoes | 1 | Attribute matches, wrong category |
+| "cozy sweaters" | Kitchen blender | 0 | Neither category nor attribute, no link to the query (**Off-topic**) |
 | "compact dumbbells" | Compact dumbbell (e.g. small adjustable set) | 3 | Right category, attribute met |
 | "compact dumbbells" | Full-size dumbbell | 2 | Right category, misses the attribute (**Missing key detail**) |
 | "compact dumbbells" | Compact exercise equipment that isn't a weight (e.g. folding bench, resistance bands) | 1 | Attribute matches, wrong category |
+| "compact free weights" | Compact adjustable dumbbell or kettlebell | 3 | Right category, attribute met |
+| "compact free weights" | Compact elliptical | 1 | Attribute matches, but it is a cardio machine, not a free weight (**Wrong product category**) |
+| "compact free weights" | Weighted vest | 1 | Weighted strength gear, but it is worn on the body, not a free weight (**Wrong product category**). Use the `product_category_need` notes if experts decide it counts. |
+| "compact dumbbells" | Compact travel pillow | 0 | "Compact" is the only link, and it is a different kind of product with no connection to exercise (**Off-topic**) |
 
-In short: right category and wrong attribute is a 2. Right attribute and wrong category is a 1. Apply the 1 even when the wrong category is a close neighbour (cozy shoes, compact exercise equipment). If the category is only loosely defined in the information need, follow the `product_category_need` notes on what does and does not count.
+In short: right category and wrong attribute is a 2. Right attribute and wrong category is a 1. A shared attribute word with no other connection (a "compact" pillow for "compact dumbbells") is a 0. Matching the attribute word alone is not a link (see "Result matches the words but not the meaning" in Section 8). The difference between 1 and 0 is whether the result is still related to what the searcher wants (same activity, same type of use), not just whether it shares the attribute. Apply the 1 even when the wrong category is a close neighbour (cozy shoes, compact exercise equipment). If the category is only loosely defined in the information need, follow the `product_category_need` notes on what does and does not count.
 
 ### Decision tree for rating
 
